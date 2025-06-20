@@ -1,0 +1,5 @@
+## Requisitos
+-FFMPG na variavel de sistema
+
+## Como Rodar
+dotnet run 
