@@ -1,5 +1,6 @@
 ## Requisitos
--FFMPG na variavel de sistema
+-"FFMPG" na variavel de sistema
+-"WebSockets" baixado no projeto
 
 ## Como Rodar
 dotnet run 

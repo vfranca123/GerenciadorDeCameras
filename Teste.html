@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Stream da Câmera</title>
+</head>
+<body>
+  <h2>Transmissão ao Vivo</h2>
+
+  <canvas id="videoCanvas" width="640" height="480"></canvas>
+
+  <!-- Script JSMpeg -->
+  <script src="https://cdn.jsdelivr.net/gh/phoboslab/jsmpeg/jsmpeg.min.js"></script>
+  <script>
+    const wsUrl = "ws://localhost:5296/stream"; // ajuste se estiver em outra porta
+    const canvas = document.getElementById("videoCanvas");
+    const player = new JSMpeg.Player(wsUrl, { canvas: canvas });
+  </script>
+</body>
+</html>

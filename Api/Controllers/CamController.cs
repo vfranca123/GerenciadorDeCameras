@@ -1,38 +1,29 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
-namespace Api.Controllers // <--- namespace ajustado
+
+namespace Api.Controllers
 {
     [ApiController]
-    [Route("api/controller")] // <--- rota corrigida
+    [Route("api/controller")]
     public class CamController : ControllerBase
     {
-
-
-
-        [HttpGet]
-        public IActionResult Get()
+        [HttpGet("stream")]
+        public async Task Stream() // é colocado como assincrono pois recebe dadso o tempo todo 
         {
-
-            //exemplo de camera para testes 
             string rtspUrl = "rtsp://admin:LABLRI123456@10.3.195.43:554/cam/realmonitor?channel=1&subtype=0";
-            string rtmpTarget = "rtmp://192.168.0.10/live/camera1";
-            string arguments = $"-rtsp_transport tcp -i \"{rtspUrl}\" -f null -";
-            this.RunFFmpeg("ffmpeg", arguments);
+            string arguments = $"-rtsp_transport tcp -i \"{rtspUrl}\" -f mpegts -codec:v mpeg1video -codec:a mp2 -";
 
-            return Ok("Servidor back feito");
-        }
+            Response.ContentType = "video/mp2t";
 
-        public void RunFFmpeg(string ffmpegPath, string arguments)
-        {
             var startInfo = new ProcessStartInfo
             {
-                FileName = ffmpegPath,
+                FileName = "ffmpeg",
                 Arguments = arguments,
                 UseShellExecute = false,
                 RedirectStandardError = true,
-                RedirectStandardOutput = false,
-                CreateNoWindow = false
+                RedirectStandardOutput = true,
+                CreateNoWindow = true
             };
 
             using (var process = new Process { StartInfo = startInfo })
@@ -45,8 +36,11 @@ namespace Api.Controllers // <--- namespace ajustado
 
                 process.Start();
                 process.BeginErrorReadLine();
-                Console.ReadKey();
-                process.Kill();
+
+                using var output = process.StandardOutput.BaseStream;
+                await output.CopyToAsync(Response.Body);
+
+                await process.WaitForExitAsync();
             }
         }
     }
